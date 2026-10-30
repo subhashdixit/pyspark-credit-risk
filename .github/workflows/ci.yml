@@ -1,0 +1,54 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    name: Python checks (${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.10', '3.11']
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYLINTHOME: .pylint-cache
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements-training.txt && pip install --no-deps -e .
+      - run: pip check
+      - run: python -m black --check src tests scripts wsgi.py gunicorn.conf.py
+      - run: python -m pylint src scripts wsgi.py gunicorn.conf.py
+      - run: python -m pytest -q --junitxml=reports/test-results.xml
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: test-results-${{ matrix.python }}
+          path: reports/test-results.xml
+  container:
+    name: Container smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: docker build -t pyspark-credit-risk:ci .
+      - run: docker run -d --name pyspark-credit-risk-ci --read-only --tmpfs /tmp -e PORT=8080 -p 8000:8080 pyspark-credit-risk:ci
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.11'
+      - run: python scripts/smoke_test.py --url http://127.0.0.1:8000 --attempts 6
+      - run: docker logs pyspark-credit-risk-ci
+        if: always()
+      - run: docker rm -f pyspark-credit-risk-ci
+        if: always()
