@@ -1,0 +1,4 @@
+-r requirements-dev.txt
+pyspark==3.5.3
+xlrd==2.0.1
+scikit-learn==1.6.1

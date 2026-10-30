@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=75,<81"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "pyspark-credit-risk"
+version = "1.0.0"
+description = "Spark-trained credit-default classifier with portable JSON inference"
+requires-python = ">=3.10,<3.13"
+dynamic = ["dependencies"]
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+[tool.setuptools.packages.find]
+where = ["src"]
+[tool.setuptools.package-data]
+spark_credit = ["templates/*.html", "static/*"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+[tool.black]
+line-length = 88
+[tool.pylint.main]
+source-roots = ["src"]
+[tool.pylint.messages_control]
+disable = ["too-few-public-methods", "too-many-locals", "too-many-statements", "too-many-arguments", "too-many-positional-arguments", "duplicate-code", "import-outside-toplevel"]
+[tool.pylint.format]
+max-line-length = 88

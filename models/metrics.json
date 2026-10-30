@@ -1,0 +1,210 @@
+{
+  "version": "1.0.0",
+  "dataset": "UCI 350 Default of Credit Card Clients; Taiwan 2005; not Home Credit",
+  "source_url": "https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients",
+  "source_sha256": "30c6be3abd8dcfd3e6096c828bad8c2f011238620f5369220bd60cfc82700933",
+  "source_rows": 30000,
+  "classes": [
+    "0",
+    "1"
+  ],
+  "selected_model": "spark_logistic_reg_0.01",
+  "threshold": 0.25,
+  "split": {
+    "train": {
+      "rows": 17982,
+      "positive_rows": 3957
+    },
+    "validation": {
+      "rows": 5978,
+      "positive_rows": 1323
+    },
+    "test": {
+      "rows": 6040,
+      "positive_rows": 1356
+    }
+  },
+  "split_strategy": "Grouped identical selected numeric profiles 60/20/20; seeds 42 and 43; not temporal",
+  "validation_candidates": {
+    "spark_logistic_reg_0.01": {
+      "rows": 5978,
+      "accuracy": 0.8082970893275343,
+      "macro_f1": 0.6074566183452641,
+      "average_precision": 0.5137238496672255,
+      "roc_auc": 0.7306763832158953,
+      "classification_report": {
+        "0": {
+          "precision": 0.8133595284872298,
+          "recall": 0.9783029001074114,
+          "f1-score": 0.8882387361029842,
+          "support": 4655.0
+        },
+        "1": {
+          "precision": 0.7335092348284961,
+          "recall": 0.21012849584278157,
+          "f1-score": 0.32667450058754405,
+          "support": 1323.0
+        },
+        "accuracy": 0.8082970893275343,
+        "macro avg": {
+          "precision": 0.7734343816578629,
+          "recall": 0.5942156979750964,
+          "f1-score": 0.6074566183452641,
+          "support": 5978.0
+        },
+        "weighted avg": {
+          "precision": 0.7956877421857068,
+          "recall": 0.8082970893275343,
+          "f1-score": 0.7639581266036655,
+          "support": 5978.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          4554,
+          101
+        ],
+        [
+          1045,
+          278
+        ]
+      ]
+    },
+    "spark_logistic_reg_0.1": {
+      "rows": 5978,
+      "accuracy": 0.7964202074272332,
+      "macro_f1": 0.5451913528402152,
+      "average_precision": 0.5067366947327177,
+      "roc_auc": 0.7253517661987817,
+      "classification_report": {
+        "0": {
+          "precision": 0.7981269510926119,
+          "recall": 0.9886143931256713,
+          "f1-score": 0.8832165819019288,
+          "support": 4655.0
+        },
+        "1": {
+          "precision": 0.75,
+          "recall": 0.12018140589569161,
+          "f1-score": 0.20716612377850163,
+          "support": 1323.0
+        },
+        "accuracy": 0.7964202074272332,
+        "macro avg": {
+          "precision": 0.774063475546306,
+          "recall": 0.5543978995106815,
+          "f1-score": 0.5451913528402152,
+          "support": 5978.0
+        },
+        "weighted avg": {
+          "precision": 0.7874759045393289,
+          "recall": 0.7964202074272332,
+          "f1-score": 0.7335988575631376,
+          "support": 5978.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          4602,
+          53
+        ],
+        [
+          1164,
+          159
+        ]
+      ]
+    }
+  },
+  "test": {
+    "rows": 6040,
+    "accuracy": 0.7751655629139073,
+    "macro_f1": 0.6837000757671112,
+    "average_precision": 0.5140345571068616,
+    "roc_auc": 0.7234416446876205,
+    "classification_report": {
+      "0": {
+        "precision": 0.8612076455256299,
+        "recall": 0.8464987190435526,
+        "f1-score": 0.8537898363479759,
+        "support": 4684.0
+      },
+      "1": {
+        "precision": 0.49930362116991645,
+        "recall": 0.5287610619469026,
+        "f1-score": 0.5136103151862464,
+        "support": 1356.0
+      },
+      "accuracy": 0.7751655629139073,
+      "macro avg": {
+        "precision": 0.6802556333477732,
+        "recall": 0.6876298904952276,
+        "f1-score": 0.6837000757671112,
+        "support": 6040.0
+      },
+      "weighted avg": {
+        "precision": 0.7799589937000757,
+        "recall": 0.7751655629139073,
+        "f1-score": 0.7774184074249122,
+        "support": 6040.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        3965,
+        719
+      ],
+      [
+        639,
+        717
+      ]
+    ]
+  },
+  "dummy_test": {
+    "rows": 6040,
+    "accuracy": 0.7754966887417218,
+    "macro_f1": 0.4367773218948154,
+    "average_precision": 0.22450331125827813,
+    "roc_auc": 0.5,
+    "classification_report": {
+      "0": {
+        "precision": 0.7754966887417218,
+        "recall": 1.0,
+        "f1-score": 0.8735546437896308,
+        "support": 4684.0
+      },
+      "1": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 1356.0
+      },
+      "accuracy": 0.7754966887417218,
+      "macro avg": {
+        "precision": 0.3877483443708609,
+        "recall": 0.5,
+        "f1-score": 0.4367773218948154,
+        "support": 6040.0
+      },
+      "weighted avg": {
+        "precision": 0.601395114249375,
+        "recall": 0.7754966887417218,
+        "f1-score": 0.677438733693813,
+        "support": 6040.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        4684,
+        0
+      ],
+      [
+        1356,
+        0
+      ]
+    ]
+  },
+  "export_max_abs_error": 3.3306690738754696e-16,
+  "missing_probe_abs_error": 5.551115123125783e-17,
+  "spark_version": "3.5.3",
+  "artifact_sha256": "e750ca40310d3943eb0158612fe1715b7ac4bc2e978bb5405d3dacd6a737f618"
+}

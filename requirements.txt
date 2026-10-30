@@ -1,13 +1,4 @@
-pandas
-numpy
-flask
-matplotlib
-seaborn
-folium
-scikit-learn
-plotly
-nbformat==5.9.2
-xgboost
-statsmodels
-pyspark
-ipykernel
+Flask==3.1.2
+gunicorn==23.0.0
+pandas==2.2.3
+numpy==1.26.4

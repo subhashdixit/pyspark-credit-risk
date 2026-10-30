@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: pyspark-credit-risk
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && pip install --no-deps .
+    startCommand: gunicorn --config gunicorn.conf.py wsgi:app
+    healthCheckPath: /health/ready
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: OPENBLAS_NUM_THREADS
+        value: "1"
+      - key: OMP_NUM_THREADS
+        value: "1"
