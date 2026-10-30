@@ -1,5 +1,7 @@
 # Spark Credit Explorer
 
+**Live application:** [Open Spark Credit Explorer](https://pyspark-credit-risk.onrender.com)
+
 An end-to-end Flask application with **real PySpark MLlib training** and lightweight **NumPy inference from a verified JSON export**. Explore synthetic financial-history inputs, inspect source-label scores, score a CSV and understand the evaluation.
 
 **Dataset change:** the original Home Credit notebook needs `application_train.csv`, which is absent and subject to Kaggle competition rules. The deployable application instead uses the openly licensed **UCI Default of Credit Card Clients** dataset. It does not claim Home Credit results. Original notebook/PDF remain unchanged under `Codes/`; the previous README and requirements are in `archive/`.
