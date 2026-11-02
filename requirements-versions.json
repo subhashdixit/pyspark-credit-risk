@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "repository": "pyspark-credit-risk",
+  "recommended_python": "3.11.11",
+  "resolver": "uv==0.13.6",
+  "files": [
+    {
+      "path": "requirements-dev.in",
+      "sha256": "f9c5dfa95578159677f4df7c664e23a5bae51cf8bd8409e96746a3d3a72cd95e"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "sha256": "294f4e8649fd7d4882f596760ab18e4ea45e5175bfa2f759bed29a9f99b2f358"
+    },
+    {
+      "path": "requirements-training.in",
+      "sha256": "305ea34166c4f0bb955bd98677bb53fc08574c1b7e3dce15806d4dc4a30a8c56"
+    },
+    {
+      "path": "requirements-training.txt",
+      "sha256": "34fdb1a05c4312766fddfaed47acdf02fc4fa27170b19827d9653bb2e1d968dc"
+    },
+    {
+      "path": "requirements.in",
+      "sha256": "436c1692956d98ee09032206ca208f556fd738b628a285348f8c9bfb3e84abf8"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "0c424cd0f5ab1d586e8778f697137959a5a793d74408ddb164a19dce92f6ae46"
+    }
+  ]
+}

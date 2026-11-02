@@ -175,3 +175,14 @@ Connect the repository in Render, create a Blueprint from `render.yaml`, confirm
 **Retraining** requires an authorized source, repeatable split/preprocessing, evaluation review and export-parity checks. It is separate from redeploying unchanged weights. Future improvements include untouched time-separated data, nonlinear comparisons, calibration, subgroup error analysis, source-drift monitoring and human governance. They are not claimed to be completed here.
 
 References: [Spark ML pipelines](https://spark.apache.org/docs/latest/ml-pipeline.html), [scikit-learn evaluation definitions](https://scikit-learn.org/stable/modules/model_evaluation.html), [UCI source](https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients), [Render Flask deployment](https://render.com/docs/deploy-flask).
+
+## Exact local dependency versions
+
+[DEPENDENCIES.md](DEPENDENCIES.md) lists the pinned runtime, development and training environments. `requirements.txt` now explicitly records all external runtime package versions, including transitive dependencies.
+
+```bash
+python3.11 -m venv .venv
+# Activate: source .venv/bin/activate (Windows: .venv\Scripts\activate)
+python -m pip install -r requirements.txt
+python -m pip check
+```

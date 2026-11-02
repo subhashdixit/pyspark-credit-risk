@@ -1,0 +1,6 @@
+# Maintained direct inputs. Regenerate exact transitive pins with uv 0.13.6.
+Flask==3.1.2
+gunicorn==23.0.0
+pandas==2.2.3
+numpy==1.26.4
+setuptools==80.9.0
