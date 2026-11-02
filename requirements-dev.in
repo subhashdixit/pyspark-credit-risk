@@ -1,0 +1,6 @@
+# Maintained direct inputs. Regenerate exact transitive pins with uv 0.13.6.
+-r requirements.in
+pytest==8.4.2
+black==25.1.0
+pylint==3.3.8
+matplotlib==3.10.7

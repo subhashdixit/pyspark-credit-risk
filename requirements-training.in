@@ -1,0 +1,5 @@
+# Maintained direct inputs. Regenerate exact transitive pins with uv 0.13.6.
+-r requirements-dev.in
+pyspark==3.5.3
+xlrd==2.0.1
+scikit-learn==1.6.1
