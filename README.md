@@ -1,22 +1,38 @@
 # Spark Credit Explorer
 
-**Live application:** [Open Spark Credit Explorer](https://pyspark-credit-risk.onrender.com)
+## 1. Project overview
 
-An end-to-end Flask application with **real PySpark MLlib training** and lightweight **NumPy inference from a verified JSON export**. Explore synthetic financial-history inputs, inspect source-label scores, score a CSV and understand the evaluation.
+PySpark-trained UCI credit-default classifier with verified portable JSON inference, Flask, Docker and CI/CD.
 
-**Dataset change:** the original Home Credit notebook needs `application_train.csv`, which is absent and subject to Kaggle competition rules. The deployable application instead uses the openly licensed **UCI Default of Credit Card Clients** dataset. It does not claim Home Credit results. Original notebook/PDF remain unchanged under `Codes/`; the previous README and requirements are in `archive/`.
+[Live demo](https://pyspark-credit-risk.onrender.com) · [Source repository](https://github.com/subhashdixit/pyspark-credit-risk)
 
-## Problem, scope and data
+![Spark Credit Explorer application screen](docs/images/application.png)
 
-This is historical binary classification: predict the source's **next-month credit-card default label** from earlier credit limits, repayment-status codes, statement balances and payment amounts. It is an educational research demonstration, not a lending decision system or a current applicant risk estimate.
+## 2. Motivation and problem statement
 
-Source: Yeh, I. (2009), [Default of Credit Card Clients, UCI 350](https://doi.org/10.24432/C55S3H), **CC BY 4.0**. The source contains 30,000 Taiwan credit-card records from 2005. Amounts are source **NTD**, not INR or USD. Attribution and adaptations are recorded in [data/README.md](data/README.md).
+### Objective
 
-The model uses **19 financial features**: `LIMIT_BAL`, six repayment codes (`PAY_0`, `PAY_2`–`PAY_6`), six bill amounts and six payment amounts. Month 1 is September 2005 and month 6 is April 2005. Do not rename the source's `PAY_0` to `PAY_1`. Negative bill balances are allowed; negative payment amounts are rejected. Repayment -1 is documented as paid duly; source -2/0 are retained without inventing new meanings.
+Train a credit-default baseline in Spark and verify that portable inference reproduces it.
 
-ID, sex, education, marital status and age are excluded. This avoids directly using those fields, but **does not establish fairness**: retained financial variables can act as proxies. No raw customer identifiers or private user inputs are needed by the interface.
+### Problem statement
 
-## Architecture and learning flow
+An offline Spark pipeline and a web scorer can disagree if feature encoding or score math diverges.
+
+### Motivation
+
+Parity checks make the transition from distributed training to a lightweight serving app inspectable.
+
+## 3. Solution and scope
+
+**Inputs** — Attributed credit-default dataset or source-format profile. **Outputs** — Historical default-label score and measured evaluation.
+
+## 4. Quick start and usage
+
+Start with the documented sample or supported input. Review the output and any validation feedback. Open the live demo above or use the local setup below.
+
+## 5. High-level architecture
+
+### Architecture and learning flow
 
 ```mermaid
 flowchart TB
@@ -38,7 +54,55 @@ flowchart TB
 
 **Why export?** The online service needs a small numerical calculation, not a Spark cluster per request. The export contains feature order, fitted medians, scaling means/deviations, coefficients and intercept. It is plain JSON, not a pickle. Serving imports neither Spark nor scikit-learn. Java is required only for offline training.
 
-## What the algorithm actually calculates
+## 6. End-to-end request workflow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as Project interface
+    participant Engine as Prediction service
+    User->>UI: Provide Attributed credit-default dataset or source-format profile
+    UI->>Engine: Process validated input
+    Engine->>Engine: Train and export the Spark model, then score with the portable artifact
+    Engine-->>UI: Historical default-label score and measured evaluation
+    UI-->>User: Present result or input feedback
+```
+
+## 7. Data sources, inputs, and outputs
+
+| Input | Processing | Output |
+| --- | --- | --- |
+| Attributed credit-default dataset or source-format profile | Train and export the Spark model, then score with the portable artifact | Historical default-label score and measured evaluation |
+
+### Problem, scope and data
+
+This is historical binary classification: predict the source's **next-month credit-card default label** from earlier credit limits, repayment-status codes, statement balances and payment amounts. It is an educational research demonstration, not a lending decision system or a current applicant risk estimate.
+
+Source: Yeh, I. (2009), [Default of Credit Card Clients, UCI 350](https://doi.org/10.24432/C55S3H), **CC BY 4.0**. The source contains 30,000 Taiwan credit-card records from 2005. Amounts are source **NTD**, not INR or USD. Attribution and adaptations are recorded in [data/README.md](data/README.md).
+
+The model uses **19 financial features**: `LIMIT_BAL`, six repayment codes (`PAY_0`, `PAY_2`–`PAY_6`), six bill amounts and six payment amounts. Month 1 is September 2005 and month 6 is April 2005. Do not rename the source's `PAY_0` to `PAY_1`. Negative bill balances are allowed; negative payment amounts are rejected. Repayment -1 is documented as paid duly; source -2/0 are retained without inventing new meanings.
+
+ID, sex, education, marital status and age are excluded. This avoids directly using those fields, but **does not establish fairness**: retained financial variables can act as proxies. No raw customer identifiers or private user inputs are needed by the interface.
+
+## 8. Data flow and ETL pipeline
+
+```mermaid
+flowchart LR
+    A["Attributed credit-default dataset or source-format profile"] --> B["Train and export the Spark model, then score with the portable artifact"] --> C["Historical default-label score and measured evaluation"]
+```
+
+```mermaid
+flowchart LR
+    A["Versioned dataset"] --> B["Validate and partition"] --> C["Fit candidate pipeline"] --> D["Evaluate and export"] --> E["Load serving artifact"]
+```
+
+## 9. Low-level design and interfaces
+
+Implementation entry points are [`wsgi.py`](<wsgi.py>), [`scripts/train.py`](<scripts/train.py>), [`src/spark_credit/schema.py`](<src/spark_credit/schema.py>), [`src/spark_credit/service.py`](<src/spark_credit/service.py>), [`src/spark_credit/web.py`](<src/spark_credit/web.py>).
+
+## 10. Concepts and algorithms
+
+### What the algorithm actually calculates
 
 1. **Median imputation** fills missing values using medians fitted only on training rows. This is robust to extreme values but ignores relationships between features.
 2. **VectorAssembler** puts numbers in one fixed feature order. Wrong ordering changes predictions even if every value is individually valid.
@@ -50,7 +114,17 @@ flowchart TB
 
 A score is not a calibrated probability of default for a current person. Lowering the threshold generally increases recall and false alarms. The UI's threshold changes the displayed decision; it does not rewrite the published test evaluation.
 
-## Split and measured results
+## 11. Technology choices and dependencies
+
+- **Python**. Keep dataset preparation, fitting, and evaluation reproducible outside the serving path.
+- **Flask**. Share the same service across interactive and HTTP entry points.
+- **PySpark ML**. Fit the Spark pipeline and test the portable export for score parity.
+
+[Dependency versions and runtime rationale](DEPENDENCIES.md)
+
+## 12. Training, inference, and evaluation
+
+### Split and measured results
 
 Identical selected numeric profiles share a group. `GroupShuffleSplit` uses seeds 42 and 43 for approximately 60/20/20 train/validation/test allocation. This reduces exact-profile leakage, but is **not temporal, geographic or institution-separated validation**. Correlated clients and historical population limits remain.
 
@@ -76,7 +150,30 @@ Confusion matrix, rows actual and columns predicted: `[[3965, 719], [639, 717]]`
 
 **Export verification:** maximum absolute score difference from Spark on held-out rows was **3.33 × 10⁻¹⁶**, with a separate missing-value probe difference of **5.55 × 10⁻¹⁷**. These verify equivalent arithmetic for this pipeline, not model accuracy or arbitrary Spark stages. Export code must change if the pipeline changes.
 
-## Run the web app locally
+### Reproduce Spark training
+
+Install a supported **Java 17 runtime/JDK** from an official vendor and set `JAVA_HOME` to that installation. Use Python 3.10/3.11 consistently for the driver and Spark workers. The project pins PySpark 3.5.3. No system-wide Spark installation or cloud cluster is required.
+
+```bash
+python -m pip install -r requirements-training.txt
+python scripts/download_data.py
+python scripts/train.py
+python scripts/plot_results.py
+```
+
+The downloader fetches the official UCI ZIP, extracts the unchanged spreadsheet into ignored `data/`, and prints its SHA-256. Training fits local Spark pipelines, checks export parity, then writes `models/portable-model.json`, `models/metrics.json` and `models/sample.json`. The model report records the source hash and Spark version. Commit those artifacts together only after reviewing results. Java/Spark are deliberately absent from production requirements.
+
+No Kaggle credentials or acceptance of Home Credit rules is needed for this UCI version. To return to the original Home Credit task, obtain authorized data and build a separate feature/data adapter and evaluation; this UCI model is not interchangeable with Home Credit inputs.
+
+Validation code is available in [`tests/test_application.py`](<tests/test_application.py>).
+
+## 13. Limitations and data handling
+
+Use the project within the scope of its documented inputs, datasets, and evaluation.
+
+## 14. Installation and local setup
+
+### Run the web app locally
 
 Python 3.10 or 3.11 is supported. The bundled JSON model requires no dataset download or Java installation for serving.
 
@@ -103,22 +200,20 @@ curl -s -X POST http://127.0.0.1:8000/predict-csv -F file=@sample.csv -o predict
 
 For a Linux serving process use `gunicorn --config gunicorn.conf.py wsgi:app`. Gunicorn handles WSGI requests; Flask's development server is only for local development. These public demo routes have no customer authentication or enterprise audit workflow.
 
-## Reproduce Spark training
+### Exact local dependency versions
 
-Install a supported **Java 17 runtime/JDK** from an official vendor and set `JAVA_HOME` to that installation. Use Python 3.10/3.11 consistently for the driver and Spark workers. The project pins PySpark 3.5.3. No system-wide Spark installation or cloud cluster is required.
+[DEPENDENCIES.md](DEPENDENCIES.md) lists the pinned runtime, development and training environments. `requirements.txt` now explicitly records all external runtime package versions, including transitive dependencies.
 
 ```bash
-python -m pip install -r requirements-training.txt
-python scripts/download_data.py
-python scripts/train.py
-python scripts/plot_results.py
+python3.11 -m venv .venv
+# Activate: source .venv/bin/activate (Windows: .venv\Scripts\activate)
+python -m pip install -r requirements.txt
+python -m pip check
 ```
 
-The downloader fetches the official UCI ZIP, extracts the unchanged spreadsheet into ignored `data/`, and prints its SHA-256. Training fits local Spark pipelines, checks export parity, then writes `models/portable-model.json`, `models/metrics.json` and `models/sample.json`. The model report records the source hash and Spark version. Commit those artifacts together only after reviewing results. Java/Spark are deliberately absent from production requirements.
+## 15. Repository structure
 
-No Kaggle credentials or acceptance of Home Credit rules is needed for this UCI version. To return to the original Home Credit task, obtain authorized data and build a separate feature/data adapter and evaluation; this UCI model is not interchangeable with Home Credit inputs.
-
-## Code structure and quality
+### Code structure and quality
 
 ```text
 Codes/                       preserved original Home Credit notebook/PDF
@@ -146,7 +241,9 @@ python scripts/smoke_test.py --url http://127.0.0.1:8000 --attempts 3
 
 Pylint includes offline training imports, so install training requirements for the full lint command. Runtime tests do not start Spark. They check real exported inference, null handling, stable sigmoid/zero-variance behavior, invalid thresholds, batch limits, integrity refusal, forms, JSON, CSV and readiness. The training script independently checks Spark-transform parity before producing a releasable artifact. Black standardizes formatting; Pylint catches common code problems; tests check behavior. None establishes fairness or current population validity.
 
-## Docker, CI/CD and Render deployment
+## 16. Deployment and operations
+
+### Docker, CI/CD and Render deployment
 
 ```bash
 docker build -t pyspark-credit-risk:local .
@@ -176,13 +273,6 @@ Connect the repository in Render, create a Blueprint from `render.yaml`, confirm
 
 References: [Spark ML pipelines](https://spark.apache.org/docs/latest/ml-pipeline.html), [scikit-learn evaluation definitions](https://scikit-learn.org/stable/modules/model_evaluation.html), [UCI source](https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients), [Render Flask deployment](https://render.com/docs/deploy-flask).
 
-## Exact local dependency versions
+## 17. License, credits, and support
 
-[DEPENDENCIES.md](DEPENDENCIES.md) lists the pinned runtime, development and training environments. `requirements.txt` now explicitly records all external runtime package versions, including transitive dependencies.
-
-```bash
-python3.11 -m venv .venv
-# Activate: source .venv/bin/activate (Windows: .venv\Scripts\activate)
-python -m pip install -r requirements.txt
-python -m pip check
-```
+[Repository code license](LICENSE). Report reproducible issues through [GitHub Issues](https://github.com/subhashdixit/pyspark-credit-risk/issues).
